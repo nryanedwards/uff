@@ -277,7 +277,7 @@ function [UffDataSets, Info, errmsg] = readuff(varargin)
 %
 %----------------
 global show_warning
-error(nargchk(1, 4, nargin));
+narginchk(1, 4);
 
 %--------------
 % Default outputs
@@ -336,7 +336,7 @@ errN = 0;               % current global error number (data-set number independe
 %--------------
 try
     fid = fopen(fileName, 'r');
-    if fid == -1,
+    if fid == -1
         errN = errN + 1;
         errmsg{errN,1} = ['could not open file: ' fileName];
         disp(errmsg{errN});
@@ -425,6 +425,10 @@ try
             continue
         end
         
+        % Moved these lines of code to avoid false errors with InfoOnly request.
+        dataSetN = dataSetN + 1;
+        ds_errmsg = [];
+        
         if readMode~=0
             % First check if dataSetN meets the filter
             if ~isempty(dsTypes)
@@ -433,9 +437,6 @@ try
                 end
             end
             
-            dataSetN = dataSetN + 1;
-            ds_errmsg = [];
-        
             % Now, read the record
             if data_set_type == 58      % Function at nodal dof
                 [ds_data,ds_errmsg] = extract58(fileName, FILE_DATA, blockLines, DataSetProp, ii);
